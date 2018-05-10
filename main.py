@@ -35,26 +35,29 @@ class LambdaReduce(LambdaBase):
 
 scale2_0x_model = LambdaBase(
     None,
-    nn.Conv2d(3, 16, (3, 3)),
-    nn.ReLU(),
-    nn.Conv2d(16, 32, (3, 3)),
-    nn.ReLU(),
-    nn.Conv2d(32, 64, (3, 3)),
-    nn.ReLU(),
-    nn.Conv2d(64, 128, (3, 3)),
-    nn.ReLU(),
-    nn.Conv2d(128, 128, (3, 3)),
-    nn.ReLU(),
-    nn.Conv2d(128, 256, (3, 3)),
-    nn.ReLU(),
+    nn.Conv2d(3, 16, (3, 3), padding=(1,1)),
+    nn.LeakyReLU(0.1),
+    nn.Conv2d(16, 32, (3, 3), padding=(1,1)),
+    nn.LeakyReLU(0.1),
+    nn.Conv2d(32, 64, (3, 3), padding=(1,1)),
+    nn.LeakyReLU(0.1),
+    nn.Conv2d(64, 128, (3, 3), padding=(1,1)),
+    nn.LeakyReLU(0.1),
+    nn.Conv2d(128, 128, (3, 3), padding=(1,1)),
+    nn.LeakyReLU(0.1),
+    nn.Conv2d(128, 256, (3, 3), padding=(1,1)),
+    nn.LeakyReLU(0.1),
     nn.ConvTranspose2d(256, 3, (4, 4), (2, 2), (3, 3), (0, 0)),
-    Lambda(lambda x: x.view(x.size(0), -1)),  # View,
+    Lambda(lambda x: x),  # View,
 )
-
+scale2_0x_model._modules['12'].bias.data = torch.zeros([3], dtype=torch.float32)
 
 img = cv2.imread("test_input.png")   # read image as color
-img = img.astype(float) / 256   # normalize values from byte to float
-# img = np.array([0.5 if x%6 < 3 else 0 for x in range(1200)]).reshape(20, 20, 3)
+# img = img.astype(float) / 256   # normalize values from byte to float
+# img = np.array([[0.0, 0.0, 1.0] if x < 5000 else [0.0, 0.0, 0.0] for x in range(10000)]).reshape(100, 100, 3)
+# img = np.array([[1.0, 1.0, 1.0] if x%100 < 50 else [0.0, 0.0, 0.0] for x in range(10000)]).reshape(100, 100, 3)
+# img = np.array([[0.0, 0.0, 1.0] if x//100%2==0 else [0.0, 0.0, 0.0] for x in range(10000)]).reshape(100, 100, 3)
+# img = np.array([1 if x%3==0 else 1 for x in range(1200)]).reshape(20, 20, 3)
 cv2.imshow("input", img)
 
 N = 1
@@ -79,17 +82,25 @@ print(type(model), model)
 output = model(data)
 print(output.shape, output)
 
+def get_image(arr):
+    arr = arr.flatten()
+    ret = []
+    for i in range(arr.size):
+        if i % 6 < 2:
+            ret.append([arr[i]])
+    return np.array(ret)
+
 img2 = output.cpu().detach().numpy()
-# img2 = img2.reshape(36, 36, 3)
-img2 = img2.reshape((2*(img.shape[0]-14), 2*(img.shape[1]-14), img.shape[2]))
-# img2 = np.swapaxes(img2,0,2)
-# img2 = np.swapaxes(img2,0,1)
+# img2 = get_image(img2).reshape(196, 196, 1)
 # print(img2.shape)
-print(img2)
+#img2 = img2.reshape((img.shape[2], 2*(img.shape[0]-2), 2*(img.shape[1]-2)))
+img2 = img2[0,:,:,:]/255.
+img2 = np.swapaxes(img2,0,2)
+img2 = np.swapaxes(img2,0,1)
+# print(img2.shape, img2)
 cv2.imshow("output", img2)
 cv2.waitKey()
 cv2.destroyAllWindows()
-
 
 def copy_param(m,n):
     if m.weight is not None:
@@ -115,7 +126,8 @@ seq_model = nn.Sequential(
     nn.Conv2d(128, 128, (3, 3), padding=(1, 1)),
     nn.ReLU(),
     nn.Conv2d(128, 256, (3, 3), padding=(1, 1)),
-    nn.ReLU()
+    nn.ReLU(),
+    nn.ConvTranspose2d(256, 3, (4, 4), (2, 2), (3, 3), (0, 0))
 ).to(device)
 
 for key in model._modules.keys():
