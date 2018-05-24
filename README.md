@@ -1,1 +1,3 @@
-# image_scale_2x
+# Image Resize
+
+A collection of tools to get the statistics of a set of image data and organize the data into a tensor by reshaping each image to a vector.
