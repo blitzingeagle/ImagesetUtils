@@ -3,6 +3,7 @@ from resize_image import resize_to_mean
 
 from operator import mul
 import numpy as np
+import cv2
 
 
 def columnize(dataset):
@@ -11,7 +12,7 @@ def columnize(dataset):
 
 if __name__ == "__main__":
     input_dir = "images"
-    imageset = resize_to_mean(load_imageset("images"))
+    imageset = resize_to_mean(load_imageset("images", cv2.IMREAD_GRAYSCALE))
     data = columnize(imageset)
 
     print(np.array(data).shape)

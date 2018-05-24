@@ -8,10 +8,10 @@ def image_paths(directory):
     return sorted(glob(path.join(directory, "*")))
 
 
-def load_images(filepaths):
-    return [cv2.imread(filepath) for filepath in filepaths]
+def load_images(filepaths, option=cv2.IMREAD_COLOR):
+    return [cv2.imread(filepath, option) for filepath in filepaths]
 
 
-def load_imageset(directory):
-    return load_images(image_paths(directory))
+def load_imageset(directory, option=cv2.IMREAD_COLOR):
+    return load_images(image_paths(directory), option)
 
