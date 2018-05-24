@@ -8,6 +8,7 @@ import os.path as path
 from glob import glob
 from pprint import pprint
 
+
 def image_paths(directory):
     return sorted(glob(path.join(directory, "*")))
 
