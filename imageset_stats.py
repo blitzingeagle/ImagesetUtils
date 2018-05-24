@@ -1,7 +1,7 @@
 from __future__ import division
 from __future__ import print_function
 
-from load_imageset import *
+from load_imageset import load_imageset
 
 from pprint import pprint
 
@@ -26,10 +26,6 @@ def imageset_stats(imageset):
 
 if __name__ == "__main__":
     directory = "images"
-    paths = image_paths(directory)
-    N = len(paths)
-    print(N, "images found.")
-
-    images = load_images(paths)
+    images = load_imageset(directory)
     stats = imageset_stats(images)
     pprint(stats, width=1)
