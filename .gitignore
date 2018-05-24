@@ -1,6 +1,7 @@
 # PyCharm
 /.idea
 /venv
+*.pyc
 
 /images
 /data
