@@ -10,3 +10,8 @@ def image_paths(directory):
 
 def load_images(filepaths):
     return [cv2.imread(filepath) for filepath in filepaths]
+
+
+def load_imageset(directory):
+    return load_images(image_paths(directory))
+
