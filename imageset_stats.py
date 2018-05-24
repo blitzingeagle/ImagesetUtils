@@ -1,20 +1,9 @@
 from __future__ import division
 from __future__ import print_function
 
-import numpy as np
-import cv2
+from load_imageset import *
 
-import os.path as path
-from glob import glob
 from pprint import pprint
-
-
-def image_paths(directory):
-    return sorted(glob(path.join(directory, "*")))
-
-
-def load_images(filepaths):
-    return [cv2.imread(filepath) for filepath in filepaths]
 
 
 def imageset_stats(imageset):
